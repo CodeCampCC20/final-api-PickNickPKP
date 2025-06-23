@@ -74,7 +74,7 @@ authController.login = async (req, res, next) => {
 
 authController.getMe = async (req, res, next) => {
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.doctor.findFirst({
       omit: {
         password: true,
         specialization: true,
