@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  role     Role   @default(USER)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  healthRecord HealthRecord[]
+  doctorNote   DoctorNote[]
+}
+
+model Doctor {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  role     Role   @default(USER)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  doctorNote DoctorNote[]
+}
+
+enum Role {
+  USER
+  DOCTOR
+}
+
+model HealthRecord {
+  id     Int      @id @default(autoincrement())
+  type   String
+  value  String
+  date   DateTime @default(now())
+  user   User?    @relation(fields: [userId], references: [id])
+  userId Int?     @map("user_id")
+
+  @@map("health_recode")
+}
+
+model DoctorNote {
+  id         Int      @id @default(autoincrement())
+  note       String
+  createDate DateTime @default(now()) @map("create_date")
+
+  User     User?   @relation(fields: [userId], references: [id])
+  userId   Int?    @map("user_id")
+  Doctor   Doctor? @relation(fields: [doctorId], references: [id])
+  doctorId Int?    @map("doctor_id")
+}
