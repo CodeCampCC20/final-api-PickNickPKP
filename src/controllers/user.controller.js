@@ -1,15 +1,15 @@
-import authService from "../services/auth.service.js";
+import userService from "../services/auth.service.js";
 import hashService from "../services/hash.service.js";
 import jwtService from "../services/jwt.service.js";
 import createError from "../utils/create-error.js";
 import prisma from "../config/prisma.js";
 
-const authController = {};
+const userController = {};
 
-authController.register = async (req, res, next) => {
+userController.register = async (req, res, next) => {
   try {
-    const { username, password, confirmPassword ,specialization } = req.body;
-    const existUser = await authService.findUserByUsername(username);
+    const { username, password, confirmPassword, specialization } = req.body;
+    const existUser = await userService.findUserByUsername(username);
     console.log("existUser", existUser);
 
     if (existUser) {
@@ -18,7 +18,7 @@ authController.register = async (req, res, next) => {
 
     const hashPassword = hashService.hashPassword(password);
 
-    const newUser = await authService.createUser({
+    const newUser = await userService.createUser({
       username,
       password: hashPassword,
       specialization,
@@ -26,20 +26,20 @@ authController.register = async (req, res, next) => {
     console.log("newUser", newUser);
 
     res.status(201).json({
-      message: "Register doctor Successfully",
+      message: "Register  Successfully",
     });
   } catch (error) {
     next(error);
   }
 };
 
-authController.login = async (req, res, next) => {
+userController.login = async (req, res, next) => {
   try {
-    const { username, password ,specialization } = req.body;
-    // const existUser = await authService.findUserByUsername(username);
-    // console.log("existUser", existUser);
+    const { username, password, specialization } = req.body;
+    const existUser = await userService.findUserByUsername(username);
+    console.log("existUser", existUser);
 
-    const user = await prisma.doctor.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         username,
         specialization,
@@ -47,16 +47,16 @@ authController.login = async (req, res, next) => {
     });
     console.log(user);
 
-    if (!user) {
+    if (!existUser) {
       createError(400, "Username or Password invalid");
     }
     const isMatchPassword = hashService.comparePassword(
       password,
-      user.password
+      existUser.password
     );
     console.log("isMatchPassword", isMatchPassword);
 
-    const payload = { id: user.id };
+    const payload = { id: existUser.id };
     const accessToken = jwtService.genAccessToken(payload);
     console.log("accessToken", accessToken);
 
@@ -71,10 +71,14 @@ authController.login = async (req, res, next) => {
   }
 };
 
-
-authController.getMe = async (req, res, next) => {
+userController.getMe = async (req, res, next) => {
   try {
+    // const {id} = req.user;
+    // console.log(id)
     const user = await prisma.user.findFirst({
+      // where:{
+      //   id: Number(id)
+      // },
       omit: {
         password: true,
         specialization: true,
@@ -89,4 +93,4 @@ authController.getMe = async (req, res, next) => {
     next(error);
   }
 };
-export default authController;
+export default userController;

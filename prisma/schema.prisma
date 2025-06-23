@@ -12,6 +12,7 @@ model User {
   id       Int    @id @default(autoincrement())
   username String @unique
   password String
+  specialization String
   role     Role   @default(USER)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -25,7 +26,8 @@ model Doctor {
   id       Int    @id @default(autoincrement())
   username String @unique
   password String
-  role     Role   @default(USER)
+  specialization String
+  role     Role   @default(DOCTOR)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
