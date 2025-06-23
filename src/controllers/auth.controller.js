@@ -3,12 +3,13 @@ import hashService from "../services/hash.service.js";
 import jwtService from "../services/jwt.service.js";
 import createError from "../utils/create-error.js";
 import prisma from "../config/prisma.js";
+import bcrypt from "bcryptjs";
 
 const authController = {};
 
 authController.register = async (req, res, next) => {
   try {
-    const { username, password, confirmPassword ,specialization } = req.body;
+    const { username, password, confirmPassword, specialization } = req.body;
     const existUser = await authService.findUserByUsername(username);
     console.log("existUser", existUser);
 
@@ -35,7 +36,7 @@ authController.register = async (req, res, next) => {
 
 authController.login = async (req, res, next) => {
   try {
-    const { username, password ,specialization } = req.body;
+    const { username, password, specialization } = req.body;
     // const existUser = await authService.findUserByUsername(username);
     // console.log("existUser", existUser);
 
@@ -71,7 +72,6 @@ authController.login = async (req, res, next) => {
   }
 };
 
-
 authController.getMe = async (req, res, next) => {
   try {
     const user = await prisma.doctor.findFirst({
@@ -90,5 +90,32 @@ authController.getMe = async (req, res, next) => {
   }
 };
 
-authController.update
+authController.updateUser = async (req, res, next) => {
+  try {
+    // 1. Read params & body
+    // const { id } = req.params;
+    const { username, password } = req.body;
+    console.log("hello", req.user);
+    const hash = bcrypt.hashSync(password, 10);
+
+    const result = await prisma.data.update({
+      where: {
+        id: req.data.id,
+      },
+      data: {
+        username,
+        password: hash,
+      },
+      omit: {
+        password: true,
+      },
+    });
+
+    res.status(200).json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+authController.update;
 export default authController;

@@ -20,7 +20,14 @@ const authenticate = async (req, res, next) => {
     const payload = jwtService.verifyToken(token);
     console.log("payload", payload);
 
-    const user = await authService;
+    const user = await authService.findUserById( payload.id );
+    if (!user) {
+      createError(401, "Unauthorization !!! user");
+    }
+
+    req.user = user;
+
+    next();
   } catch (error) {
     next(error);
   }

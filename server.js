@@ -6,6 +6,7 @@ import authRouter from "./src/routes/auth.route.js"
 import userRouter from "./src/routes/user.route.js";
 import userGetMeRouter from "./src/routes/user-me.route.js";
 import doctorGetMeRouter from "./src/routes/doctor-me.route.js";
+import healthRecordRouter from "./src/routes/health-record.route.js";
 const app = express();
 
 app.use(express.json());
@@ -15,10 +16,7 @@ app.use("/auth", authRouter );
 app.use("/auth", userRouter );
 app.use("/", userGetMeRouter);
 app.use("/", doctorGetMeRouter);
-// app.use("/auth/users", () => {});
-// app.use("/auth/doctors", () => {});
-// app.use("/auth/health-records", () => {});
-// app.use("/auth/doctor-notes", () => {});
+app.use("/", healthRecordRouter);
 
 app.use(errorMiddleware);
 app.use(notFound);

@@ -13,4 +13,26 @@ authService.createUser = (data) => {
     data,
   });
 };
+
+authService.findUserById = (id) => {
+  return prisma.doctor.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      username: true,
+      role: true,
+    },
+  });
+};
+
+authService.findUserById = (id) => {
+  return prisma.doctor.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      username: true,
+      password: true,
+    },
+  });
+};
 export default authService;
