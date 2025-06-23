@@ -89,4 +89,6 @@ authController.getMe = async (req, res, next) => {
     next(error);
   }
 };
+
+authController.update
 export default authController;
